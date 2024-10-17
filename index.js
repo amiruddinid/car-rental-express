@@ -1,13 +1,14 @@
 const envPath = process.env.NODE_ENV === 'development' ? 
   '.env' : `.env.${process.env.NODE_ENV}` // .env || .env.test
 require('dotenv').config({path: envPath})
+const http = require('http');
 const express = require("express");
 const app = express();
 const path = require("path");
 const cors = require('cors');
 const routes = require('./src/routes')
 const errorHandler = require("./src/middlewares/errorHandler");
-
+const server = http.createServer(app)
 const { PORT = 3000 } = process.env;
 
 // const server = http.createServer(app);
@@ -33,7 +34,7 @@ app.use((req, res, next) => {
   next(new NotFoundError(null, "Sorry, page not found!"));
 })
 
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port http://localhost:${PORT}`);
 });
 

@@ -21,6 +21,7 @@ const signUpSchema = Joi.object({
       "string.pattern.base": `Password must have at least 1 uppercase, 
         1 lowercase, 1 number, and 1 special character (i.e. !@#$%^&*)`,
     }),
+  fullname: Joi.string()
 });
 
 const signInSchema = Joi.object({
@@ -73,7 +74,7 @@ class AuthController extends BaseController {
 
   signUp = async (req, res, next) => {
     try {
-      const { email, password } = req.body;
+      const { email, password, fullname } = req.body;
       const user = await this.model.getOne({ where: { email } });
 
       if (user) return next(new ValidationError("Email already exist!"));
@@ -81,6 +82,7 @@ class AuthController extends BaseController {
       const newUser = await this.model.set({
         email,
         password: await encryptPassword(password),
+        fullname,
         roleId: 3
       });
 

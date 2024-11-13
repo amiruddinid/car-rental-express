@@ -27,7 +27,7 @@ class BaseController {
           AND: this.filter
         }
       }
-
+      
       const { resources, count } = await this.model.get({
         q: {
           sortBy,

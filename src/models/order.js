@@ -7,11 +7,16 @@ class OrderModel extends BaseModel {
     this.select = {
         id: true,
         order_no: true,
-        users:{
-          fullname: true
+        overdue_time: true,
+        users: {
+          select:{
+            fullname: true
+          }
         },
         cars:{
-          name: true
+          select:{
+            name: true
+          }
         },
         status: true
     };

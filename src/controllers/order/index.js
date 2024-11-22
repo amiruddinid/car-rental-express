@@ -48,23 +48,10 @@ class OrderController extends BaseController {
   }
 
   getMyOrder = async (req, res, next) => {
-    try {
-      const getOrder = await this.model.get({
-        where: {
-          user_id: req.user.id,
-        }
-      })
-      return res.status(200).json(
-        this.apiSend({
-          code: 200,
-          status: "success",
-          message: "Order fetched successfully",
-          data: getOrder,
-        })
-      );
-    } catch (error) {
-      return next(error);
+    req.query.filter = {
+      user_id: req.user.id
     }
+    return this.getAll(req, res, next)
   }
 
   // mengubah create

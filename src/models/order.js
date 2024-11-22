@@ -8,6 +8,9 @@ class OrderModel extends BaseModel {
         id: true,
         order_no: true,
         overdue_time: true,
+        status: true,
+        createdDt: true,
+        total: true,
         users: {
           select:{
             fullname: true
@@ -18,7 +21,6 @@ class OrderModel extends BaseModel {
             name: true
           }
         },
-        status: true
     };
   }
 }

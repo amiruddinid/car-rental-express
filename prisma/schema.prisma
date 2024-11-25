@@ -59,7 +59,7 @@ model users {
   id             Int       @id @default(autoincrement())
   fullname       String?   @db.VarChar
   email          String    @unique @db.VarChar(30)
-  password       String    @db.VarChar
+  password       String?    @db.VarChar
   address        String?   @db.VarChar
   gender         String?   @db.VarChar
   avatar         String?   @db.VarChar
@@ -71,6 +71,8 @@ model users {
   updatedDt      DateTime? @updatedAt
   createdBy      String?   @db.VarChar
   updatedBy      String?   @db.VarChar
+  googleId       String?
+  provider       String    @default("local")
   order          order[]
   role           roles  @relation(fields: [roleId], references: [id], onDelete: Cascade)
 }

@@ -6,6 +6,7 @@ const UserModel = require("../../models/user");
 const { checkPassword, encryptPassword } = require("../../helpers/bcrypt");
 const { createToken } = require("../../helpers/jwt");
 const { authorize } = require("../../middlewares/authorization");
+const { getAuth, signInWithCredential, GoogleAuthProvider } = require("firebase/auth");
 const router = express.Router();
 
 const user = new UserModel();
@@ -35,6 +36,7 @@ class AuthController extends BaseController {
     super(model);
     router.post("/signin", this.validation(signInSchema), this.signIn);
     router.post("/signup", this.validation(signUpSchema), this.signUp);
+    router.post("/googleSignIn", this.googleSignIn);
     router.get('/whoami', authorize, this.whoAmI)
   }
 
@@ -118,6 +120,65 @@ class AuthController extends BaseController {
         },
       })
     );
+  }
+
+  googleSignIn = async(req, res, next) =>{
+    const id_token = req.body.idToken;
+    const credential = GoogleAuthProvider.credential(id_token);
+
+    // Sign in with credential from the Google user.
+    const auth = getAuth();
+    try{
+      const signIn = await signInWithCredential(auth, credential)
+      // Handle Errors here.
+
+      let user = await this.model.getOne({ where: { email: signIn.user.email } });
+      if(user?.provider === 'local'){
+        user = await this.model.update(user.id, {
+          provider: signIn.providerId,
+          googleId: signIn.user.uid,
+        })
+      }
+
+      if (!user) {
+        user = await this.model.set({
+          email: signIn.user.email,
+          password: null,
+          fullname: signIn.user.displayName,
+          provider: signIn.providerId,
+          googleId: signIn.user.uid,
+          avatar: signIn.user.photoURL,
+          roleId: 3
+        });
+      }
+      
+      const token = createToken({
+        id: user.id,
+      });
+
+      return res.status(200).json(
+        this.apiSend({
+          code: 200,
+          status: "success",
+          message: "Sign in with google succesfully",
+          data: {
+            user: {
+              ...user,
+              password: undefined,
+            },
+            token
+          },
+        })
+      )
+    } catch(e){
+      const errorCode = e.code;
+      const errorMessage = e.message;
+      // The email of the user's account used.
+      // The AuthCredential type that was used.
+      const credential = GoogleAuthProvider.credentialFromError(e);
+      console.log(credential)
+      next(new ServerError(e));
+    }
   }
 }
 

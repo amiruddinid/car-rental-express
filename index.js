@@ -10,11 +10,13 @@ const routes = require('./src/routes')
 const errorHandler = require("./src/middlewares/errorHandler");
 const server = http.createServer(app)
 const { PORT = 3000 } = process.env;
+// const firebase = require('./src/config/firebase')
 
 // const server = http.createServer(app);
 
 // untuk meregistrasi global variable untuk error handling
 require("./src/helpers/errors");
+require('./src/config/firebase')
 
 app.use(cors())
 app.use(express.json());

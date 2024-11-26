@@ -29,6 +29,7 @@ const carSchema = Joi.object({
 class CarsController extends BaseController {
   constructor(model) {
     super(model);
+    this.filter = [{ isAvailable: true}]
     this.searchField = ['name', 'type', 'manufactur', 'year']
     router.get("/", this.handleFilter, this.getAll);
     router.post("/", this.validation(carSchema), authorize, rbac('CARS', 'create'), this.create);

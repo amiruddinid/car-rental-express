@@ -18,6 +18,7 @@ class OrderModel extends BaseModel {
         },
         cars:{
           select:{
+            id: true,
             name: true
           }
         },

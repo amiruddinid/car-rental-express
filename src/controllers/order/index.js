@@ -42,15 +42,15 @@ class OrderController extends BaseController {
     router.put("/:id", authorize, this.updateOrder);
     router.get("/:id/invoice", authorize, this.downloadInvoice);
     router.put("/:id/payment", authorize, this.payment);
-    router.get("/:id/cancel", authorize, this.cancelOrder)
+    router.put("/:id/cancel", authorize, this.cancelOrder)
     // router.put("/:id", this.validation(carSchema), authorize, checkRole(['admin']), this.update);
     // router.delete("/:id", this.delete);
   }
 
   getMyOrder = async (req, res, next) => {
-    req.query.filter = {
+    this.filter = [{
       user_id: req.user.id
-    }
+  }]
     return this.getAll(req, res, next)
   }
 

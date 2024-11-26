@@ -129,10 +129,13 @@ class AuthController extends BaseController {
     // Sign in with credential from the Google user.
     const auth = getAuth();
     try{
+      //get google data
       const signIn = await signInWithCredential(auth, credential)
-      // Handle Errors here.
 
+      //check email in db
       let user = await this.model.getOne({ where: { email: signIn.user.email } });
+
+      //check if provider local and update to new provider
       if(user?.provider === 'local'){
         user = await this.model.update(user.id, {
           provider: signIn.providerId,
@@ -140,6 +143,7 @@ class AuthController extends BaseController {
         })
       }
 
+      // if user not found register user using data from google
       if (!user) {
         user = await this.model.set({
           email: signIn.user.email,
@@ -152,10 +156,12 @@ class AuthController extends BaseController {
         });
       }
       
+      // create token from (db) user id
       const token = createToken({
         id: user.id,
       });
 
+      //sent response
       return res.status(200).json(
         this.apiSend({
           code: 200,
